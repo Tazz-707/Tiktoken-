@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Clone - نظام التعليقات المحسن</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+        <!-- Authentication Overlay -->
+    <div class="auth-overlay" id="authOverlay">
+        <!-- Login Form -->
+        <div class="auth-container" id="loginForm">
+            <div class="auth-logo">
+                <span>Ti</span><span>kTok</span>
+            </div>
+            <div class="auth-title">Log in to TikTok</div>
+            <div class="auth-error" id="loginError">Invalid email or password</div>
+            <div class="auth-success" id="loginSuccess">Login successful! Redirecting...</div>
+            
+            <form class="auth-form" id="loginFormElement">
+                <input type="text" class="auth-input" id="loginEmail" placeholder="Email or username" required>
+                <input type="password" class="auth-input" id="loginPassword" placeholder="Password" required>
+                
+                <div class="forgot-password">
+                    <span onclick="showForgotPassword()">Forgot password?</span>
+                </div>
+                
+                <button type="submit" class="auth-button">Log in</button>
+            </form>
+            
+            <div class="auth-toggle">
+                Don't have an account? <span onclick="showSignup()">Sign up</span>
+            </div>
+        </div>
+        
+        <!-- Signup Form -->
+        <div class="auth-container" id="signupForm" style="display: none;">
+            <div class="auth-logo">
+                <span>Ti</span><span>kTok</span>
+            </div>
+            <div class="auth-title">Sign up for TikTok</div>
+            <div class="auth-error" id="signupError">Please fill all fields correctly</div>
+            <div class="auth-success" id="signupSuccess">Account created! Verifying...</div>
+            
+            <form class="auth-form" id="signupFormElement">
+                <input type="text" class="auth-input" id="signupUsername" placeholder="Username" required>
+                <input type="email" class="auth-input" id="signupEmail" placeholder="Email" required>
+                <input type="password" class="auth-input" id="signupPassword" placeholder="Password" required>
+                <input type="password" class="auth-input" id="signupConfirmPassword" placeholder="Confirm Password" required>
+                
+                <button type="submit" class="auth-button">Sign up</button>
+            </form>
+            
+            <div class="auth-toggle">
+                Already have an account? <span onclick="showLogin()">Log in</span>
+            </div>
+        </div>
+        
+        <!-- Forgot Password Form -->
+        <div class="auth-container" id="forgotPasswordForm" style="display: none;">
+            <div class="auth-logo">
+                <span>Ti</span><span>kTok</span>
+            </div>
+            <div class="auth-title">Reset Password</div>
+            <div class="auth-error" id="forgotError">Email not found</div>
+            <div class="auth-success" id="forgotSuccess">Password reset instructions sent!</div>
+            <div class="reset-instructions">
+                Enter your email and we'll send you instructions to reset your password.
+            </div>
+            
+            <form class="auth-form" id="forgotPasswordFormElement">
+                <input type="email" class="auth-input" id="forgotEmail" placeholder="Email" required>
+                
+                <button type="submit" class="auth-button">Send Instructions</button>
+            </form>
+            
+            <button class="auth-button secondary" onclick="showLogin()">Back to Login</button>
+        </div>
+    </div>
+    
+    <!-- App Content -->
+    <div class="app-content">
+        <!-- TikTok Logo -->
+        <div class="tiktok-logo">
+            <span></span><span></span>
+        </div>
+        
+        <!-- Logout Button -->
+        <button class="logout-button" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+        
+        <!-- Video Feed -->
+        <div class="video-feed" id="videoFeed">
+            <!-- Video 1 - Cooking -->
+            <div class="video-container" id="video1">
+                <video class="video-player" loop>
+                    <source src="https://j.top4top.io/m_3445e874c0.mp4" type="video/mp4">
+                </video>
+                <div class="play-button" onclick="playVideo(this, event)">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-ui">
+                    <div class="right-sidebar">
+                        <div class="sidebar-icon" onclick="showFriendProfile('chefmariam')">
+                            <div class="profile-container">
+                                <div class="icon-container">
+                                    <img src="https://randomuser.me/api/portraits/women/65.jpg" class="profile-pic">
+                                </div>
+                                <button class="follow-btn" onclick="toggleFollow(event, 'chefmariam')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                         
+                        </div>
+                      
+                        <div class="sidebar-icon" onclick="toggleLike(this)">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-heart" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">0</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showComments('cooking')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-comment" style="color: white; font-size: 28px;"></i>
+                            </div>
+                             <span class="icon-label" id="commentsCounticon">0</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showShare('cooking')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-share" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">Share</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showMusic('cooking')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-music" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">Cooking Vibes</span>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="username" onclick="showFriendProfile('chefmariam')">@chefmariam</div>
+                        <div class="caption">Quick 5-minute salad recipe! 🥗 #cooking #foodie</div>
+                        <div class="music-info">
+                            <i class="fas fa-music music-note"></i>
+                            <span>Original Sound - chefmariam</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="heart-animation" id="heartAnimation">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+            
+            <!-- Video 2 - Travel -->
+            <div class="video-container" id="video2">
+               <video class="video-player" loop>
+                    <source src="https://l.top4top.io/m_3445vhwpq1.mp4" type="video/mp4">
+                </video>
+                <div class="play-button" onclick="playVideo(this, event)">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-ui">
+                    <div class="right-sidebar">
+                        <div class="sidebar-icon" onclick="showFriendProfile('travelwithme')">
+                            <div class="profile-container">
+                                <div class="icon-container">
+                                    <img src="https://randomuser.me/api/portraits/men/75.jpg" class="profile-pic">
+                                </div>
+                                <button class="follow-btn" onclick="toggleFollow(event, 'travelwithme')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                        </div>
+                        <div class="sidebar-icon" onclick="toggleLike(this)">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-heart" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">0</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showComments('travel')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-comment" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">0</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showShare('travel')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-share" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">Share</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showMusic('travel')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-music" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">Travel Music</span>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="username" onclick="showFriendProfile('travelwithme')">@travelwithme</div>
+                        <div class="caption">Morning views from the train in Switzerland 🇨🇭 #travel #nature</div>
+                        <div class="music-info">
+                            <i class="fas fa-music music-note"></i>
+                            <span>Travel Vibes - Soundtrack</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="heart-animation" id="heartAnimation">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+            
+            <!-- Video 3 - Fitness -->
+            <div class="video-container" id="video3">
+                <video class="video-player" loop>
+                    <source src="https://a.top4top.io/m_3445l9niq2.mp4" type="video/mp4">
+                </video>
+                <div class="play-button" onclick="playVideo(this, event)">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="video-ui">
+                    <div class="right-sidebar">
+                        <div class="sidebar-icon" onclick="showFriendProfile('fitnesstrainer')">
+                            <div class="profile-container">
+                                <div class="icon-container">
+                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" class="profile-pic">
+                                </div>
+                                <button class="follow-btn" onclick="toggleFollow(event, 'fitnesstrainer')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                        </div>
+                        <div class="sidebar-icon" onclick="toggleLike(this)">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-heart" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">0</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showComments('fitness')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-comment" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">0</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showShare('fitness')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-share" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">Share</span>
+                        </div>
+                        <div class="sidebar-icon" onclick="showMusic('fitness')">
+                            <div class="icon-container" style="background-color: rgba(0,0,0,0.3);">
+                                <i class="fas fa-music" style="color: white; font-size: 28px;"></i>
+                            </div>
+                            <span class="icon-label">Workout Mix</span>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="username" onclick="showFriendProfile('fitnesstrainer')">@fitnesstrainer</div>
+                        <div class="caption">Morning yoga routine for beginners 🧘‍♀️ #fitness #yoga</div>
+                        <div class="music-info">
+                            <i class="fas fa-music music-note"></i>
+                            <span>Relaxing Music - Yoga Flow</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="heart-animation" id="heartAnimation">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-icon active" onclick="showHome()">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-icon" onclick="showSearch()">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="upload-btn" onclick="showUpload()">
+                <i class="fas fa-plus"></i>
+            </div>
+<div class="nav-icon" onclick="showNotifications()">
+    <i class="fas fa-bell"></i>
+    <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
+</div>
+            <div class="nav-icon" onclick="showMyProfile('currentuser')">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+        
+<!-- My Profile Page -->
+        <div class="profile-page" id="myProfilePage">
+            <div class="profile-page-header">
+                <button class="back-button" onclick="backToHome()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="profile-page-title">My Profile</div>
+            </div>
+            
+            <div class="profile-page-content">
+                <div class="profile-header">
+                     <img src="https://randomuser.me/api/portraits/men/1.jpg" id="profile-page" class="profile-pic-large">
+            
+                    <h2>@yourusername</h2>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-value">120</span>
+                            <span class="stat-label">Following</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">5.2K</span>
+                            <span class="stat-label">Followers</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">24.8K</span>
+                            <span class="stat-label">Likes</span>
+                        </div>
+                    </div>
+                    <button class="follow-btn-profile" onclick="editProfile()">
+                        Edit Profile
+                    </button>
+                </div>
+                
+                <div class="profile-bio">
+                    This is your profile. Edit your bio to tell people about yourself!
+                </div>
+                
+                <div class="profile-page-tabs">
+                    <div class="profile-page-tab active" onclick="switchProfileTab('videos')"><i class="fas fa-video"></i>
+                    <span>الفيديوهات</span>
+                </div>
+                    <div class="profile-page-tab" onclick="switchProfileTab('liked')"><i class="fas fa-retweet"></i>
+                    <span>إعادة نشر</span>
+                 </div>
+            </div>
+                
+                <div class="profile-page-videos">
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Friend Profile Page -->
+        <div class="profile-page" id="friendProfilePage">
+            <div class="profile-page-header">
+                <button class="back-button" onclick="backToHome()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="profile-page-title" id="friendProfileTitle">Profile</div>
+            </div>
+            
+            <div class="profile-page-content">
+                <div class="profile-header">
+                    <img src="" class="profile-pic-large" id="friendProfilePic">
+                    <h2 id="friendProfileUsername">@username</h2>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="friendFollowingCount">0</span>
+                            <span class="stat-label">Following</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="friendFollowerCount">0</span>
+                            <span class="stat-label">Followers</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="friendLikeCount">0</span>
+                            <span class="stat-label">Likes</span>
+                        </div>
+                    </div>
+                    <button class="follow-btn-profile" id="friendFollowBtn" onclick="toggleFriendFollow()">
+                        Follow
+                    </button>
+                </div>
+                
+                <div class="profile-bio" id="friendProfileBio">
+                    Loading profile...
+                </div>
+                
+                <div class="profile-page-tabs">
+                    <div class="profile-page-tab active" onclick="switchFriendProfileTab('videos')"><i class="fas fa-video"></i>
+                    <span>الفيديوهات</span>
+                    </div>
+                    <div class="profile-page-tab" onclick="switchFriendProfileTab('liked')"><i class="fas fa-retweet"></i>
+                    <span>إعادة نشر</span>
+                 </div>
+            </div>
+                </div>
+                
+                <div class="profile-page-videos" id="friendProfileVideos">
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="profile-page-video">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Profile Overlay -->
+<div class="overlay" id="editProfileOverlay">
+    <div class="close-button" onclick="hideOverlay('editProfileOverlay')">
+        <i class="fas fa-times"></i>
+    </div>
+    <div class="edit-profile-container">
+        <div class="edit-profile-header">
+            <h2>تعديل الملف الشخصي</h2>
+        </div>
+        
+        <div class="profile-pic-edit">
+            <img src="https://randomuser.me/api/portraits/men/1.jpg" id="profilePicPreview" class="profile-pic-large">
+            <button class="change-profile-pic" onclick="changeProfilePicture()">
+                <i class="fas fa-camera"></i> تغيير الصورة
+            </button>
+            <input type="file" id="profilePicUpload" accept="image/*" style="display: none;">
+        </div>
+        
+        <div class="edit-form">
+            <div class="form-group">
+                <label for="editUsername">اسم المستخدم</label>
+                <input type="text" id="editUsername" class="form-input" placeholder="اسم المستخدم">
+            </div>
+            
+            <div class="form-group">
+                <label for="editBio">السيرة الذاتية</label>
+                <textarea id="editBio" class="form-input" rows="3" placeholder="أخبرنا عن نفسك..."></textarea>
+            </div>
+            
+            <button class="save-profile-btn" onclick="saveProfileChanges()">حفظ التغييرات</button>
+        </div>
+    </div>
+</div>
+        
+        
+        <!-- Search Overlay -->
+        <div class="overlay" id="searchOverlay">
+            <div class="close-button" onclick="hideOverlay('searchOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search" style="margin-right: 10px; color: #999;"></i>
+                    <input type="text" class="search-input" placeholder="Search accounts and videos">
+                </div>
+                <div class="search-categories">
+                    <div class="search-category active">All</div>
+                    <div class="search-category">Accounts</div>
+                    <div class="search-category">Videos</div>
+                    <div class="search-category">Sounds</div>
+                    <div class="search-category">Live</div>
+                    <div class="search-category">Hashtags</div>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <!-- Search results will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifications Overlay -->
+        <div class="overlay" id="notificationsOverlay">
+    <div class="close-button" onclick="hideOverlay('notificationsOverlay')">
+        <i class="fas fa-times"></i>
+    </div>
+    <div class="notifications-container">
+        <div class="notifications-header">
+            <h2>الإشعارات</h2>
+            <button class="mark-all-read" onclick="markAllNotificationsAsRead()">تعيين الكل كمقروء</button>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+    <!-- سيتم تحميل الإشعارات هنا ديناميكياً -->
+</div>
+    </div>
+</div>
+        
+        <!-- Upload Overlay -->
+        <div class="overlay" id="uploadOverlay">
+            <div class="close-button" onclick="hideOverlay('uploadOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="upload-container">
+                <h2 style="margin-bottom: 20px; align-self: flex-start;">Upload Video</h2>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('videoUpload').click()">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <div class="upload-text">Select video to upload</div>
+                    <input type="file" id="videoUpload" accept="video/*" style="display: none;" onchange="handleVideoUpload(this)">
+                </div>
+                <textarea class="caption-input" placeholder="Write a caption..." id="videoCaption"></textarea>
+                <button class="post-button" onclick="postVideo()">Post</button>
+            </div>
+        </div>
+        
+        <!-- Comments Overlay -->
+        <div class="overlay" id="commentsOverlay">
+            <div class="close-button" onclick="hideOverlay('commentsOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="comments-overlay">
+                <div class="drag-handle"></div>
+                <div class="comments-header">
+                    <div class="comments-count" id="commentsCount">24 تعليقاً</div>
+                </div>
+                <div class="comments-list" id="commentsList">
+                    <!-- سيتم تحميل التعليقات هنا -->
+                </div>
+                <div id="replyContext" class="reply-context">
+    <div class="reply-context-text"></div>
+    <div class="reply-context-cancel" onclick="cancelReplyContext()">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                <div class="comment-input-container">
+                    <input type="text" class="comment-input" placeholder="أضف تعليقاً..." id="commentInput">
+                    <button class="send-comment" onclick="postComment()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Share Overlay -->
+        <div class="overlay" id="shareOverlay">
+            <div class="close-button" onclick="hideOverlay('shareOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="share-overlay">
+                <div class="share-header">Share</div>
+                <div class="share-options">
+                    <div class="share-option" onclick="shareVia('whatsapp')">
+                        <div class="share-icon" style="background: linear-gradient(to right, #25D366, #128C7E);">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="share-label">WhatsApp</div>
+                    </div>
+                    <div class="share-option" onclick="shareVia('facebook')">
+                        <div class="share-icon" style="background: linear-gradient(to right, #1877F2, #0D47A1);">
+                            <i class="fab fa-facebook"></i>
+                        </div>
+                        <div class="share-label">Facebook</div>
+                    </div>
+                    <div class="share-option" onclick="shareVia('twitter')">
+                        <div class="share-icon" style="background: linear-gradient(to right, #1DA1F2, #0D47A1);">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="share-label">Twitter</div>
+                    </div>
+                   <div class="share-option" onclick="shareVia('repost')">
+    <div class="share-icon" style="background: linear-gradient(to right, #25F4EE, #FE2C55);">
+        <i class="fas fa-retweet"></i>
+    </div>
+    <div class="share-label">إعادة نشر</div>
+</div>
+                    <div class="share-option" onclick="shareVia('messenger')">
+                        <div class="share-icon" style="background: linear-gradient(to right, #0084FF, #0064CD);">
+                            <i class="fab fa-facebook-messenger"></i>
+                        </div>
+                        <div class="share-label">Messenger</div>
+                    </div>
+                    <div class="share-option" onclick="shareVia('link')">
+                        <div class="share-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="share-label">Copy Link</div>
+                    </div>
+                    <div class="share-option" onclick="shareVia('qrcode')">
+                        <div class="share-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="share-label">QR Code</div>
+                    </div>
+                    <div class="share-option" onclick="shareVia('more')">
+                        <div class="share-icon">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <div class="share-label">More</div>
+                    </div>
+                </div>
+                <div class="share-link">
+                    <div class="link-text">https://tiktok.com/video/12345</div>
+                    <button class="copy-link" onclick="copyToClipboard()">Copy</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Music Overlay -->
+        <div class="overlay" id="musicOverlay">
+            <div class="close-button" onclick="hideOverlay('musicOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="music-overlay">
+                <div class="music-header">Sound Details</div>
+                <div class="music-details">
+                    <div class="music-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="music-info-large">
+                        <div class="music-title" id="musicTitle">Cooking Vibes</div>
+                        <div class="music-artist" id="musicArtist">Original Sound - chefmariam</div>
+                        <div class="music-stats" id="musicStats">Used in 12.5K videos</div>
+                    </div>
+                </div>
+                <button class="use-sound-btn">Use this sound</button>
+                <div class="related-sounds">
+                    <div class="related-title">Related sounds</div>
+                    <div class="sound-item" onclick="changeSound('sound1')">
+                        <div class="sound-cover">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="sound-details">
+                            <div class="sound-name">Kitchen Beats</div>
+                            <div class="sound-artist">@cookingmaster</div>
+                        </div>
+                    </div>
+                    <div class="sound-item" onclick="changeSound('sound2')">
+                        <div class="sound-cover">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="sound-details">
+                            <div class="sound-name">Foodie Rhythm</div>
+                            <div class="sound-artist">@foodtiktok</div>
+                        </div>
+                    </div>
+                    <div class="sound-item" onclick="changeSound('sound3')">
+                        <div class="sound-cover">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="sound-details">
+                            <div class="sound-name">Cooking Time</div>
+                            <div class="sound-artist">@cheflife</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Toast -->
+    <div class="toast" id="toast"></div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/video.js"></script>
+    <script src="js/comments.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
